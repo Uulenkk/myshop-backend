@@ -6,16 +6,20 @@ const prisma = new PrismaClient();
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, username} = req.body;
 
     // Орж ирсэн өгөгдөл хоосон эсэхийг шалгах
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email and password are required' });
+      return res.status(400).json({ message: 'Name, email, password, and username are required' });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
+    }
+     const existingUsername = await prisma.user.findUnique({ where: { username } });
+    if (existingUsername) {
+      return res.status(400).json({ message: 'Username already taken' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -24,6 +28,7 @@ export const registerUser = async (req, res) => {
       data: {
         name,
         email,
+        username,
         password: hashedPassword,
       },
     });
@@ -61,6 +66,7 @@ export const loginUser = async (req, res) => {
       {
         userId: user.id,
         email: user.email,
+        username: user.username,
         isAdmin: user.isAdmin,
       },
       process.env.JWT_SECRET,
@@ -71,7 +77,9 @@ export const loginUser = async (req, res) => {
       token,
       userId: user.id,
       email: user.email,
+      username: user.username,
       isAdmin: user.isAdmin,
+       image: user.image || null 
     });
   } catch (error) {
     console.error(error);
