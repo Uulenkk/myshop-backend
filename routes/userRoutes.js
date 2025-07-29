@@ -40,10 +40,7 @@ router.post(
     try {
       // Token-аас хэрэглэгчийн id-г гаргаж авна гэж төсөөлж байна, эсвэл body-с авна
       const userId = req.user.id; // authenticateToken middleware-д userId нэмэгдсэн гэж үзвэл
-      const imagePath = req.file.path;
-
-      const imageUrl = `${req.protocol}://${req.get('host')}/${imagePath}`;
-
+      
       const user = await prisma.user.update({
         where: { id: userId },
         data: { profileImageUrl: imageUrl },

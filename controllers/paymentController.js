@@ -1,12 +1,30 @@
-import { createInvoice } from '../services/qpayService.js';
+// controllers/paymentController.js
 
-export const initiatePayment = async (req, res) => {
+import prisma from '../prisma/client.js';
+import { checkPaymentStatus } from '../services/qpayService.js'; // QPay төлбөр шалгах үйлдэл
+
+export const confirmPayment = async (req, res) => {
+  const { orderId } = req.body;
+
   try {
-    const { amount, orderId } = req.body;
-    const invoice = await createInvoice(amount, orderId);
-    res.json(invoice); // QR code, invoice_id г.м
+    // QPay эсвэл таны системээс төлбөрийн төлөвийг шалгах
+    const paymentStatus = await checkPaymentStatus(orderId);
+
+    if (paymentStatus === 'PAID') {
+      // Төлбөр баталгаажсан учир захиалгын төлөвийг өөрчилж хадгалах
+      await prisma.order.update({
+        where: { id: Number(orderId) },
+        data: { status: 'PAID' },
+      });
+
+      // Хэрэглэгчид мэдэгдэл илгээх код энд нэмнэ (имэйл, SMS, push notification гэх мэт)
+
+      return res.json({ message: 'Төлбөр амжилттай баталгаажлаа' });
+    } else {
+      return res.status(400).json({ message: 'Төлбөр баталгаажаагүй байна' });
+    }
   } catch (error) {
-    console.error('QPay алдаа:', error.response?.data || error.message);
-    res.status(500).json({ message: 'QPay төлбөр үүсгэхэд алдаа гарлаа' });
+    console.error('Төлбөр баталгаажуулахад алдаа:', error);
+    res.status(500).json({ message: 'Төлбөр баталгаажуулахад алдаа гарлаа' });
   }
 };

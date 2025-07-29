@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -15,7 +16,7 @@ model User {
   password      String
   isAdmin       Boolean        @default(false)
   username      String?         @unique
-  profileImageUrl String? 
+  
   orders        Order[]
   cartItems     CartItem[]     // CartItem холбоос нэмсэн
   wishlistItems WishlistItem[] // WishlistItem холбоос нэмсэн
@@ -29,10 +30,12 @@ model Product {
   description String?
   price       Float
   category    String
+  
   type        ProductType?
   gender      String?
   material    String?
   images      String[]
+  colors      String[] 
   sizes       ProductSize[]   @relation("ProductSizes")
   orderItems  OrderProduct[]
   cartItems   CartItem[]      // CartItem холбоос нэмсэн
@@ -85,9 +88,9 @@ enum OrderStatus {
 }
 
 enum ProductType {
-  Ready
-  Preorder
-  Brand
+  Ready      
+  Preorder   
+  Brand      
 }
 
 model Order {
@@ -96,6 +99,11 @@ model Order {
   userId      Int
   orderItems  OrderProduct[]
   status      OrderStatus  @default(Pending)
+  name        String?   // ← энэ 3 байх ёстой
+  phone       String?
+  address     String?
+  aimag       String?       // ✅ Нэмсэн
+  district    String?       // ✅ Нэмсэн
   totalPrice  Float
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -108,5 +116,7 @@ model OrderProduct {
   product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
+  color     String?
+  size     String?
 }
 

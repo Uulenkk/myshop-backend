@@ -10,10 +10,10 @@ export const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Invalid token' });
-
-    // JWT-д байгаа userId-г id гэж дамжуулж өгнө
+  console.log('Decoded JWT user:', user);
+    
     req.user = {
-      id: user.userId,
+      userId: user.userId,
       email: user.email,
       isAdmin: user.isAdmin,
     };

@@ -13,32 +13,28 @@ dotenv.config();
 
 const app = express();
 
-// ----------- Middleware -----------
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
-// JSON payloads авахад ашиглана
-
-
-// multipart/form-data дэмжих middleware-г route дээр `multer`-тэй хэрэглэдэг тул энд заавал тохируулах шаардлагагүй
-
-// static зураг үзүүлэх (локалд хадгалсан зургуудыг client талд serve хийх)
+// Static images serve
 app.use('/uploads', express.static(path.resolve('uploads')));
 
-// ----------- Routes -----------
-
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// ----------- Start Server -----------
+// Root route
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to myshop backend!' });
+});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
 });

@@ -1,6 +1,8 @@
 import prisma from '../prisma/client.js';
 import { buildProductQuery, buildSort } from '../utils/filterQuery.js';
 // Бүх барааг sizes-тай хамт авах
+
+
 export const getProducts = async (req, res) => {
   try {
     const products = await prisma.product.findMany({
@@ -41,10 +43,13 @@ export const createProduct = async (req, res) => {
       description,
       type,
       sizes,
+      colors,
     } = req.body;
-
+    
+    const colorsParsed = colors ? JSON.parse(colors) : [];
     const imagePaths = req.files ? req.files.map(f => `/uploads/${f.filename}`) : [];
     const sizesParsed = sizes ? JSON.parse(sizes) : [];
+   
 
     const product = await prisma.product.create({
   data: {
@@ -56,6 +61,7 @@ export const createProduct = async (req, res) => {
     type,
     price: parseFloat(price),
     images: imagePaths,
+      colors: colorsParsed, 
     sizes: {
       create: sizesParsed.map((s) => ({
         sizeLabel: s.sizeLabel,
@@ -88,10 +94,14 @@ export const updateProduct = async (req, res) => {
       description,
       type,
       sizes,
+      colors, 
     } = req.body;
-
+     
+   const colorsParsed = colors ? JSON.parse(colors) : [];
     // sizes JSON-аар ирвэл задлах
     const sizesParsed = sizes ? JSON.parse(sizes) : [];
+    
+
 
     // Эхлээд sizes-ийг устгах (эсвэл өөр арга хэрэглэнэ)
     await prisma.productSize.deleteMany({
@@ -107,10 +117,10 @@ export const updateProduct = async (req, res) => {
         gender,
         material,
         description,
-        type,
+          type, 
         price: parseFloat(price),
         images,
-        // sizes-г дахин нэмэх
+           colors: colorsParsed,  // sizes-г дахин нэмэх
         sizes: {
           create: sizesParsed.map((s) => ({
             sizeLabel: s.sizeLabel,
@@ -165,10 +175,10 @@ export const deleteProduct = async (req, res) => {
 };
 export const getAllProducts = async (req, res) => {
   try {
-    const filter = buildProductQuery(req.query); // Prisma-н filter format-г ашигла
-    const sort = buildSort(req.query);           // Prisma-н orderBy format-г ашигла
+    const filter = buildProductQuery(req.query);
+    const sort = buildSort(req.query);
     const page = Number(req.query.page) || 1;
-    const limit = 10;
+    const limit = 1000;
     const skip = (page - 1) * limit;
 
     const products = await prisma.product.findMany({
@@ -185,3 +195,4 @@ export const getAllProducts = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+

@@ -38,36 +38,38 @@ export const makeAdmin = async (req, res) => {
 // Өөрийн мэдээллийг авах (token-аас id авна)
 export const getOwnProfile = async (req, res) => {
   try {
-    const userId = req.user.id; // authenticateToken middleware-аас
+    const userId = req.user?.userId; // эндээс авна
+
+    if (!userId) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId },  // id-г зөв дамжуулна
       select: {
         id: true,
         name: true,
         email: true,
         phone: true,
-        username: true, // username: true,
-         profileImageUrl: true,
+        username: true,
         isAdmin: true
       }
     });
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Failed to get user profile:', error);
+    res.status(500).json({ message: 'Failed to get user profile' });
   }
 };
+
 export const updateOwnProfile = async (req, res) => {
   const { name, email, phone, password } = req.body;
-   if (email) {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      if (existingUser && existingUser.id !== req.user.id) {
-        return res.status(400).json({ message: 'Email already in use by another user' });
-      }
-    }
+
   let hashedPassword;
   if (password) {
     const salt = await bcrypt.genSalt(10);
@@ -89,25 +91,5 @@ export const updateOwnProfile = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error updating profile' });
-  }
-};
-export const uploadProfileImage = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-    const imagePath = req.file.path;
-    const imageUrl = `${req.protocol}://${req.get('host')}/${imagePath}`;
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: { profileImageUrl: imageUrl },
-    });
-
-    res.json({ success: true, imageUrl });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to upload profile image' });
   }
 };
