@@ -39,25 +39,10 @@ export const getCart = async (req, res) => {
   }
   try {
     const result = await pool.query(
-      `SELECT 
-  c.*, 
-  p.name, 
-  p.price, 
-  p.images, 
-  p.colors,
-  json_agg(
-    json_build_object(
-      'id', ps.id,
-      'sizeLabel', ps."sizeLabel",
-      'measurements', ps.measurements
-    )
-  ) AS sizes
-FROM "CartItem" c
-JOIN "Product" p ON c."productId" = p.id
-LEFT JOIN "ProductSize" ps ON ps."productId" = p.id
-WHERE c."userId" = $1
-GROUP BY c.id, p.id;
-`,
+      `SELECT c.*, p.name, p.price, p.images, p.size, p.colors 
+       FROM "CartItem" c 
+       JOIN "Product" p ON c."productId" = p.id 
+       WHERE c."userId" = $1`,
       [userId]
     );
     res.json(result.rows);
