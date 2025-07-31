@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           source: "."
-          target: "/${{ secrets.VPS_USER }}/app"
+          target: "/home/app"
 
       - name: SSH into VPS and deploy
         uses: appleboy/ssh-action@master
@@ -46,6 +46,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /app
-            docker-compose down
-            docker-compose up -d --build
+            cd /home/app
+            docker compose down
+            docker compose up -d --build
