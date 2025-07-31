@@ -12,6 +12,7 @@ services:
     environment:
       DATABASE_URL: postgresql://uulen:Erdemuulen@db:5432/matedb
       SHADOW_DATABASE_URL: postgresql://postgres:Erdemsaihan@localhost:5432/myshopshadowdb
+      JWT_SECRET: 'random'
 
   db:
     image: bitnami/postgresql
