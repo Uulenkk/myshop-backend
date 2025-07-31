@@ -13,7 +13,7 @@ async function sendOtpEmail(req, res) {
     from: 'suppmate4@gmail.com',
     to: req.body.toEmail,
     subject: 'Verify code test',
-    text: `Your OTP code is: 1234`,
+    text: `Your OTP code is: 12234`,
   };
 
   try {
