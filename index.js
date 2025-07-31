@@ -8,28 +8,30 @@ import orderRoutes from './routes/orderRoutes.js';
 import path from 'path';
 import cartRoutes from './routes/cartRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
-
+import passwordResetRoutes from './routes/passwordResetRoutes.js';
+import otpRouter from './routes/otpRoutes.js';
 dotenv.config();
 
 const app = express();
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/otp', otpRouter);
 
-// Static images serve
+
 app.use('/uploads', express.static(path.resolve('uploads')));
 
-// API routes
+
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/password-reset', passwordResetRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-// Root route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to myshop backend!' });
 });
