@@ -36,7 +36,7 @@ model Product {
   material    String?
   images      String[]
   colors      String[] 
-  sizes       ProductSize[]   @relation("ProductSizes")
+  size       ProductSize[]   @relation("ProductSizes")
   orderItems  OrderProduct[]
   cartItems   CartItem[]      // CartItem холбоос нэмсэн
   wishlistItems WishlistItem[] // WishlistItem холбоос нэмсэн
