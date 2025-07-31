@@ -1,0 +1,35 @@
+services:
+  express-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - my-network  
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://uulen:Erdemuulen@db:5432/matedb
+      SHADOW_DATABASE_URL: postgresql://postgres:Erdemsaihan@localhost:5432/myshopshadowdb
+
+  db:
+    image: bitnami/postgresql
+    restart: always
+    environment:
+      POSTGRES_USER: uulen
+      POSTGRES_PASSWORD: Erdemuulen
+      POSTGRES_DB: matedb
+    networks:
+      - my-network  
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+
+networks:
+  my-network:
+    driver: bridge
