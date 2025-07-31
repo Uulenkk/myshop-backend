@@ -8,7 +8,6 @@ import orderRoutes from './routes/orderRoutes.js';
 import path from 'path';
 import cartRoutes from './routes/cartRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
-import passwordResetRoutes from './routes/passwordResetRoutes.js';
 import otpRouter from './routes/otpRoutes.js';
 dotenv.config();
 
@@ -27,7 +26,6 @@ app.use('/uploads', express.static(path.resolve('uploads')));
 
 
 app.use('/api/auth', authRoutes);
-app.use('/api/auth/password-reset', passwordResetRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
