@@ -1,7 +1,7 @@
 import pool from '../models/db.js';
 
 export const addToCart = async (req, res) => {
-  const { userId, productId, quantity } = req.body;
+  const { userId, productId, quantity, size, color } = req.body;
 
   try {
     // Байгаа эсэхийг шалгах
@@ -14,15 +14,15 @@ export const addToCart = async (req, res) => {
       // Тоог нэмэх
       const newQuantity = existing.rows[0].quantity + quantity;
       const updated = await pool.query(
-        'UPDATE "CartItem" SET quantity = $1 WHERE "userId" = $2 AND "productId" = $3 RETURNING *',
-        [newQuantity, userId, productId]
+        'UPDATE "CartItem" SET quantity = $1, color = $2, size = $3 WHERE "userId" = $4 AND "productId" = $5 RETURNING *',
+        [newQuantity, color, size, userId, productId]
       );
       res.json(updated.rows[0]);
     } else {
       // Шинээр нэмэх
       const inserted = await pool.query(
-        'INSERT INTO "CartItem" ("userId", "productId", quantity) VALUES ($1, $2, $3) RETURNING *',
-        [userId, productId, quantity]
+        'INSERT INTO "CartItem" ("userId", "productId", quantity, size, color) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [userId, productId, quantity, size, color]
       );
       res.json(inserted.rows[0]);
     }
@@ -39,7 +39,7 @@ export const getCart = async (req, res) => {
   }
   try {
     const result = await pool.query(
-      `SELECT c.*, p.name, p.price, p.images, p.size, p.colors 
+      `SELECT c.*, p.name, p.price, p.images
        FROM "CartItem" c 
        JOIN "Product" p ON c."productId" = p.id 
        WHERE c."userId" = $1`,

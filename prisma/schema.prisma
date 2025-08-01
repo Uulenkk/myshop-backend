@@ -51,6 +51,8 @@ model CartItem {
   product   Product @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int     @default(1)
+  color     String
+  size      String
 
   @@unique([userId, productId])
 }
