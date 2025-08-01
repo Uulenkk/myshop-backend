@@ -30,6 +30,7 @@ services:
 
 volumes:
   pgdata:
+    external: true
 
 networks:
   my-network:
