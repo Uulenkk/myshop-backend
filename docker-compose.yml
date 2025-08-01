@@ -14,24 +14,6 @@ services:
       SHADOW_DATABASE_URL: postgresql://postgres:Erdemsaihan@localhost:5432/myshopshadowdb
       JWT_SECRET: 'random'
 
-  db:
-    image: bitnami/postgresql
-    restart: always
-    environment:
-      POSTGRES_USER: uulen
-      POSTGRES_PASSWORD: Erdemuulen
-      POSTGRES_DB: matedb
-    networks:
-      - my-network  
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
-    external: true
-
 networks:
   my-network:
     driver: bridge
