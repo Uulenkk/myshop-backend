@@ -7,8 +7,6 @@ services:
       - my-network  
     ports:
       - "5000:5000"
-    depends_on:
-      - db
     environment:
       DATABASE_URL: postgresql://uulen:Erdemuulen@db:5432/matedb
       SHADOW_DATABASE_URL: postgresql://postgres:Erdemsaihan@localhost:5432/myshopshadowdb
