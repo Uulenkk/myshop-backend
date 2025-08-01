@@ -31,6 +31,27 @@ export const addToCart = async (req, res) => {
     res.status(500).json({ error: 'Серверийн алдаа гарлаа' });
   }
 };
+export const increaseCartQuantity = async (req, res) => {
+  const { userId, productId } = req.body;
+
+  try {
+    const cartItem = await db.cart.findFirst({
+      where: { userId, productId },
+    });
+
+    if (!cartItem) return res.status(404).json({ message: 'Item not found' });
+
+    await db.cart.update({
+      where: { id: cartItem.id },
+      data: { quantity: cartItem.quantity + 1 },
+    });
+
+    res.status(200).json({ message: 'Quantity increased' });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 export const getCart = async (req, res) => {
   const userId = parseInt(req.params.userId, 10);

@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import express from 'express';
-import sendOtpEmail from '../controllers/mailOTPController.js';
+import { sendOtpEmail, verifyOtpEmail } from '../controllers/mailOTPController.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/send-otp', sendOtpEmail)
+router.post('/send-otp', authenticateToken, sendOtpEmail);
+router.post('/verify-otp', authenticateToken, verifyOtpEmail)
 
 export default router;

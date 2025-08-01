@@ -5,7 +5,8 @@ import {
   addToCart,
   getCart,
   removeFromCart,
-  removeOneFromCart // ← энэ мөрийг нэмж байна
+  removeOneFromCart ,// ← энэ мөрийг нэмж байна
+  increaseCartQuantity
 } from '../controllers/cartController.js';
 
 const router = express.Router();
@@ -14,5 +15,5 @@ router.post('/', addToCart);                 // POST /api/cart
 router.get('/:userId', getCart);             // GET  /api/cart/:userId
 router.delete('/', removeFromCart);          // DELETE /api/cart
 router.put('/decrease', removeOneFromCart);  // PUT /api/cart/decrease (1-р багасгах)
-
+router.put('/increase', increaseCartQuantity); // PUT /api/cart/increase
 export default router;

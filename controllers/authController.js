@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, username} = req.body;
+    const { name, email, phone, password, username} = req.body;
 
     // Орж ирсэн өгөгдөл хоосон эсэхийг шалгах
     if (!name || !email || !password) {
@@ -28,6 +28,7 @@ export const registerUser = async (req, res) => {
       data: {
         name,
         email,
+        phone,
         username,
         password: hashedPassword,
       },
