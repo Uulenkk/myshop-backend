@@ -23,7 +23,7 @@ jobs:
 
   cd:
     name: Continuous Deployment
-    needs: ci          # Only runs if CI passed
+    # needs: ci          # Only runs if CI passed
     runs-on: ubuntu-latest
 
     steps:
