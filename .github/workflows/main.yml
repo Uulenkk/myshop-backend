@@ -6,20 +6,20 @@ on:
       - main
 
 jobs:
-  ci:
-    name: Continuous Integration
-    runs-on: ubuntu-latest
+  # ci:
+  #   name: Continuous Integration
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Start services with Docker Compose
-        run: docker compose up -d --build
+  #     - name: Start services with Docker Compose
+  #       run: docker compose up -d --build
 
-      - name: Stop Docker Compose services
-        if: always()
-        run: docker compose down
+  #     - name: Stop Docker Compose services
+  #       if: always()
+  #       run: docker compose down
 
   cd:
     name: Continuous Deployment
