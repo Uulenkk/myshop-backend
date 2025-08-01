@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Create volume
-        run: docker volume create pgdata || true
 
       - name: Start services with Docker Compose
         run: docker compose up -d --build
@@ -48,7 +46,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            docker volume create pgdata || true
             cd /home/app
             docker compose down
             docker compose up -d --build
