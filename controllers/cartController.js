@@ -1,4 +1,5 @@
 import pool from '../models/db.js';
+import prisma from '../prisma/client.js';
 
 export const addToCart = async (req, res) => {
   const { userId, productId, quantity, size, color } = req.body;
@@ -35,13 +36,13 @@ export const increaseCartQuantity = async (req, res) => {
   const { userId, productId } = req.body;
 
   try {
-    const cartItem = await db.cart.findFirst({
+    const cartItem = await prisma.cartItem.findFirst({
       where: { userId, productId },
     });
 
     if (!cartItem) return res.status(404).json({ message: 'Item not found' });
 
-    await db.cart.update({
+    await prisma.cartItem.update({
       where: { id: cartItem.id },
       data: { quantity: cartItem.quantity + 1 },
     });
