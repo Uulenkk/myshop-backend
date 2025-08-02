@@ -71,20 +71,35 @@ export const updateOwnProfile = async (req, res) => {
   const { name, email, phone, currentPassword, newPassword } = req.body;
 
   try {
+    const userId = req.user?.userId || req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'User not authenticated' });
+
+    // Одоогийн хэрэглэгчийг password-тайгаа хамт авч ирнэ
     const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: userId },
+      select: { id: true, password: true }
     });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Хэрвээ newPassword ирсэн бол currentPassword шалгах хэрэгтэй
+    // Имэйлийн давхцлыг шалгах
+    const emailExists = await prisma.user.findFirst({
+      where: {
+        email,
+        NOT: { id: userId }
+      }
+    });
+    if (emailExists) {
+      return res.status(400).json({ message: 'Email аль хэдийн бүртгэлтэй байна' });
+    }
+
+    // Хэрвээ шинэ нууц үг ирсэн бол одоогийн нууц үг шалгах
     if (newPassword) {
       if (!currentPassword) {
         return res.status(400).json({ message: 'Current password is required to change password' });
       }
-
       const isMatch = await bcrypt.compare(currentPassword, user.password);
       if (!isMatch) {
         return res.status(401).json({ message: 'Current password is incorrect' });
@@ -98,7 +113,7 @@ export const updateOwnProfile = async (req, res) => {
     }
 
     const updated = await prisma.user.update({
-      where: { id: req.user.id },
+      where: { id: userId },
       data: {
         name,
         email,
@@ -109,7 +124,7 @@ export const updateOwnProfile = async (req, res) => {
 
     res.json({ message: 'Profile updated successfully', user: updated });
   } catch (error) {
-    console.error(error);
+    console.error('❌ Update profile error:', error);
     res.status(500).json({ message: 'Server error updating profile' });
   }
 };
