@@ -68,15 +68,35 @@ export const getOwnProfile = async (req, res) => {
 };
 
 export const updateOwnProfile = async (req, res) => {
-  const { name, email, phone, password } = req.body;
-
-  let hashedPassword;
-  if (password) {
-    const salt = await bcrypt.genSalt(10);
-    hashedPassword = await bcrypt.hash(password, salt);
-  }
+  const { name, email, phone, currentPassword, newPassword } = req.body;
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Хэрвээ newPassword ирсэн бол currentPassword шалгах хэрэгтэй
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to change password' });
+      }
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
+      }
+    }
+
+    let hashedPassword;
+    if (newPassword) {
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(newPassword, salt);
+    }
+
     const updated = await prisma.user.update({
       where: { id: req.user.id },
       data: {
