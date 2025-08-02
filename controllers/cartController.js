@@ -33,11 +33,11 @@ export const addToCart = async (req, res) => {
   }
 };
 export const increaseCartQuantity = async (req, res) => {
-  const { userId, productId } = req.body;
+  const { userId, productId, size, color } = req.body;
 
   try {
     const cartItem = await prisma.cartItem.findFirst({
-      where: { userId, productId },
+      where: { userId, productId, size, color },
     });
 
     if (!cartItem) return res.status(404).json({ message: 'Item not found' });
