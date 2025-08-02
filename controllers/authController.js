@@ -41,26 +41,28 @@ export const registerUser = async (req, res) => {
   }
 };
 
+
 export const loginUser = async (req, res) => {
   try {
-    const { phoneOrEmail, password } = req.body;
+    const { loginInput, password } = req.body;
 
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: phoneOrEmail },
-          { phone: phoneOrEmail },
+          { email: loginInput },
+          { phone: loginInput },
+          { username: loginInput },
         ],
       },
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email/phone or password' });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email/phone or password' });
+      return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign(
@@ -80,11 +82,9 @@ export const loginUser = async (req, res) => {
       email: user.email,
       username: user.username,
       isAdmin: user.isAdmin,
-      
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
